@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 class Eastern_tzinfo(datetime.tzinfo):
     """Implementation of the Eastern timezone.
@@ -30,14 +31,21 @@ class Eastern_tzinfo(datetime.tzinfo):
             return "EDT"
         
         
-def date_for_new_snippet():
-    """Return next Monday, unless it is Monday (0) or Tuesday (1)"""
-    today = datetime.datetime.now(Eastern_tzinfo()).date()
-    if (today.weekday() < 2):
-        aligned = today - datetime.timedelta(days=today.weekday())
+def date_for_new_snippet(date_string=None):
+    if date_string:
+        dt = datetime.datetime.strptime(date_string, "%Y/%m/%d")
+        aligned = dt.replace(tzinfo=Eastern_tzinfo()).date()
+
+        logging.info('date> %r' % aligned)
+        return aligned
     else:
-        aligned = today + datetime.timedelta(days=(7 - today.weekday()))
-    return aligned
+        """Return next Monday, unless it is Monday (0) or Tuesday (1)"""
+        today = datetime.datetime.now(Eastern_tzinfo()).date()
+        if (today.weekday() < 2):
+            aligned = today - datetime.timedelta(days=today.weekday())
+        else:
+            aligned = today + datetime.timedelta(days=(7 - today.weekday()))
+        return aligned
 
 
 def date_for_retrieval():

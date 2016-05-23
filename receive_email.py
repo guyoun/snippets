@@ -29,7 +29,15 @@ class ReceiveEmail(InboundMailHandler):
             split_email = re.split(reply_pattern, content)
             content = split_email[0]
 
-            create_or_replace_snippet(user, content, date_for_new_snippet())
+            date_pattern = re.compile(r'^\d+/\d+/\d+', re.MULTILINE)
+            m = date_pattern.search(content)
+
+            date_string = None
+            if m:
+                date_string = m.group(0)
+                content = content.replace(date_string, '')
+
+            create_or_replace_snippet(user, content, date_for_new_snippet(date_string))
 
 
 def main():
